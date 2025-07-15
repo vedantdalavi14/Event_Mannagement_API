@@ -16,31 +16,6 @@ This is a RESTful API for managing events, built with Node.js, Express, and Post
 - **Database:** PostgreSQL
 - **ORM:** Sequelize
 
-## Project Structure
-```
-. 
-├── config
-│   └── database.js
-├── controllers
-│   ├── eventController.js
-│   └── userController.js
-├── middlewares
-│   └── validation.js
-├── models
-│   ├── event.js
-│   ├── index.js
-│   ├── registration.js
-│   └── user.js
-├── routes
-│   ├── eventRoutes.js
-│   └── userRoutes.js
-├── .env
-├── .gitignore
-├── index.js
-├── package.json
-└── README.md
-```
-
 ## Setup Instructions
 
 1.  **Clone the repository:**
@@ -86,95 +61,144 @@ This is a RESTful API for managing events, built with Node.js, Express, and Post
     npm run dev
     ```
 
-## API Endpoints
+## API Endpoints & Examples
+
+**Note for Windows PowerShell Users:** PowerShell uses `Invoke-WebRequest` which has a different syntax. The `curl` alias in PowerShell does not work the same way. The examples below are for `bash` or a similar shell.
+
+---
 
 ### Users
 
 #### `POST /users`
 Create a new user.
 
--   **Request Body:**
-    ```json
-    {
+- **`curl` Command:**
+  ```bash
+  curl -X POST http://localhost:3000/users -H "Content-Type: application/json" -d '{"name":"Priya Sharma","email":"priya.sharma@example.com"}'
+  ```
+
+- **Success Response (`201 Created`):**
+  ```json
+  {
+      "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
       "name": "Priya Sharma",
-      "email": "priya.sharma@example.com"
-    }
-    ```
--   **Response (`201 Created`):** Returns the created user object.
+      "email": "priya.sharma@example.com",
+      "updatedAt": "2025-07-16T10:00:00.000Z",
+      "createdAt": "2025-07-16T10:00:00.000Z"
+  }
+  ```
+
+---
 
 ### Events
 
 #### `POST /events`
 Create a new event.
 
--   **Request Body:**
-    ```json
-    {
-      "title": "Bangalore Tech Summit",
-      "datetime": "2025-12-01T10:00:00Z",
-      "location": "Bangalore, KA",
-      "capacity": 500
-    }
-    ```
--   **Response (`201 Created`):** Returns the `eventId`.
+- **`curl` Command:**
+  ```bash
+  curl -X POST http://localhost:3000/events -H "Content-Type: application/json" -d '{"title":"Bangalore Tech Summit","datetime":"2025-12-01T10:00:00Z","location":"Bangalore, KA","capacity":500}'
+  ```
 
-#### `GET /events/:id`
-Get details for a specific event, including a list of registered users.
-
--   **Response (`200 OK`):** Returns the event object.
-
-#### `POST /events/:id/register`
-Register a user for an event.
-
--   **Request Body:**
-    ```json
-    {
-      "userId": "user-uuid-string"
-    }
-    ```
--   **Response (`201 Created`):** On successful registration.
-
-#### `DELETE /events/:id/register`
-Cancel a user's registration for an event.
-
--   **Request Body:**
-    ```json
-    {
-      "userId": "user-uuid-string"
-    }
-    ```
--   **Response (`200 OK`):** On successful cancellation.
+- **Success Response (`201 Created`):**
+  ```json
+  {
+      "eventId": "f1e2d3c4-b5a6-7890-1234-567890abcdef"
+  }
+  ```
 
 #### `GET /events/upcoming`
 Get a list of all upcoming events.
 
--   **Sorting:**
-    1.  By date, ascending.
-    2.  By location, alphabetically.
--   **Response (`200 OK`):** Returns an array of event objects.
+- **`curl` Command:**
+  ```bash
+  curl http://localhost:3000/events/upcoming
+  ```
+
+- **Success Response (`200 OK`):**
+  ```json
+  [
+      {
+          "id": "f1e2d3c4-b5a6-7890-1234-567890abcdef",
+          "title": "Bangalore Tech Summit",
+          "datetime": "2025-12-01T10:00:00.000Z",
+          "location": "Bangalore, KA",
+          "capacity": 500,
+          "createdAt": "2025-07-16T10:05:00.000Z",
+          "updatedAt": "2025-07-16T10:05:00.000Z"
+      }
+  ]
+  ```
+
+#### `GET /events/:id`
+Get details for a specific event, including registered users.
+
+- **`curl` Command:**
+  ```bash
+  curl http://localhost:3000/events/EVENT_ID_HERE
+  ```
+
+- **Success Response (`200 OK`):**
+  ```json
+  {
+      "id": "f1e2d3c4-b5a6-7890-1234-567890abcdef",
+      "title": "Bangalore Tech Summit",
+      "datetime": "2025-12-01T10:00:00.000Z",
+      "location": "Bangalore, KA",
+      "capacity": 500,
+      "Users": [
+          {
+              "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+              "name": "Priya Sharma",
+              "email": "priya.sharma@example.com"
+          }
+      ]
+  }
+  ```
 
 #### `GET /events/:id/stats`
 Get statistics for a specific event.
 
--   **Response (`200 OK`):** Returns an object with `totalRegistrations`, `remainingCapacity`, and `percentageUsed`.
+- **`curl` Command:**
+  ```bash
+  curl http://localhost:3000/events/EVENT_ID_HERE/stats
+  ```
 
----
+- **Success Response (`200 OK`):**
+  ```json
+  {
+    "totalRegistrations": 1,
+    "remainingCapacity": 499,
+    "percentageUsed": "0.20%"
+  }
+  ```
 
-## Sample `curl` Requests
+#### `POST /events/:id/register`
+Register a user for an event.
 
-**Note for Windows PowerShell Users:** PowerShell uses `Invoke-WebRequest` which has a different syntax. The `curl` alias in PowerShell does not work the same way. The examples below are for `bash` or a similar shell.
+- **`curl` Command:**
+  ```bash
+  curl -X POST http://localhost:3000/events/EVENT_ID_HERE/register -H "Content-Type: application/json" -d '{"userId":"USER_ID_HERE"}'
+  ```
 
-**Create a user:**
-```bash
-curl -X POST http://localhost:3000/users -H "Content-Type: application/json" -d '{"name":"Rohan Verma","email":"rohan.verma@example.com"}'
-```
+- **Success Response (`201 Created`):**
+  ```json
+  {
+      "message": "Successfully registered for the event."
+  }
+  ```
 
-**Create an event:**
-```bash
-curl -X POST http://localhost:3000/events -H "Content-Type: application/json" -d '{"title":"Mumbai Startup Meetup","datetime":"2025-11-15T18:00:00Z","location":"Mumbai","capacity":150}'
-```
+#### `DELETE /events/:id/register`
+Cancel a user's registration for an event.
 
-**Register for an event (replace `:id` and `userId`):**
-```bash
-curl -X POST http://localhost:3000/events/EVENT_ID_HERE/register -H "Content-Type: application/json" -d '{"userId":"USER_ID_HERE"}'
-``` 
+- **`curl` Command:**
+  ```bash
+  curl -X DELETE http://localhost:3000/events/EVENT_ID_HERE/register -H "Content-Type: application/json" -d '{"userId":"USER_ID_HERE"}'
+  ```
+
+- **Success Response (`200 OK`):**
+  ```json
+  {
+      "message": "Successfully cancelled registration for the event."
+  }
+  ``` 
