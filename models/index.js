@@ -12,5 +12,5 @@ const db = {
   Event,
   Registration,
 };
-
+ 
 module.exports = db; 

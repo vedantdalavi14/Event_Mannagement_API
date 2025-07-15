@@ -19,7 +19,7 @@ const Registration = sequelize.define('Registration', {
         }
     }
 }, {
-    timestamps: true,
+    timestamps: true, 
     createdAt: 'createdAt',
     updatedAt: false
 });
