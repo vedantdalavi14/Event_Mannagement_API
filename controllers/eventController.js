@@ -56,7 +56,7 @@ const registerForEvent = async (req, res) => {
             await t.rollback();
             return res.status(404).json({ error: 'Event not found.' });
         }
-
+ 
         // Step 2: Validate that the event is in the future.
         if (new Date(event.datetime) < new Date()) {
             await t.rollback();

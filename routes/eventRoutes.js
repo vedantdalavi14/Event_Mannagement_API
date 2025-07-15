@@ -5,7 +5,7 @@ const { createEvent, getEventById, registerForEvent, cancelRegistration, getUpco
 const { handleValidationErrors } = require('../middlewares/validation');
 
 router.get('/upcoming', getUpcomingEvents);
-
+ 
 router.post(
   '/',
   [
