@@ -69,7 +69,7 @@ const registerForEvent = async (req, res) => {
             await t.rollback();
             return res.status(404).json({ error: 'User not found.' });
         }
-
+ 
         // Step 4: Prevent double registration.
         const existingRegistration = await Registration.findOne({
             where: { userId, eventId: id },
