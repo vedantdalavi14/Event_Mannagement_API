@@ -62,7 +62,7 @@ const registerForEvent = async (req, res) => {
             await t.rollback();
             return res.status(400).json({ error: 'Cannot register for a past event.' });
         }
-
+ 
         // Step 3: Ensure the user exists.
         const user = await User.findByPk(userId, { transaction: t });
         if (!user) {

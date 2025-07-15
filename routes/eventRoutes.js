@@ -26,7 +26,7 @@ router.get(
     handleValidationErrors,
     getEventById
 );
-
+ 
 router.get(
     '/:id/stats',
     [
