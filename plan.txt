@@ -1,0 +1,104 @@
+# Event Management API - My Development Plan
+
+This document details the structured plan I designed and followed to build the Event Management API. My goal was to ensure a clean architecture, robust business logic, and a well-documented codebase.
+
+### Phase 1: Project Initialization and Setup
+1.  **Initialize Node.js Project:**
+    -   Establish the project foundation with `npm init`.
+
+2.  **Install Dependencies:**
+    -   Install core dependencies: `express`, `sequelize`, `pg`, `pg-hstore`, `body-parser`, `dotenv`, `uuid`.
+    -   Install development dependencies: `nodemon`.
+
+3.  **Establish Project Structure:**
+    -   Create a clean, scalable folder structure:
+        -   `/config` for database configuration.
+        -   `/controllers` for request handling logic.
+        -   `/models` for database schemas and relationships.
+        -   `/routes` for API endpoint definitions.
+        -   `/middlewares` for validation and other middleware.
+
+4.  **Configure Environment:**
+    -   Set up `dotenv` to manage environment variables.
+    -   Create a `.env` file for local development credentials (DB connection details, port).
+    -   Add a check in `index.js` to ensure required environment variables are present on startup.
+
+### Phase 2: Database Modeling with Sequelize
+1.  **Configure Database Connection:**
+    -   Create `config/database.js` to initialize the Sequelize instance and connect to the PostgreSQL database.
+
+2.  **Define Models:**
+    -   **User Model:** `models/user.js` with fields: `id` (UUID), `name`, `email` (unique).
+    -   **Event Model:** `models/event.js` with fields: `id` (UUID), `title`, `datetime`, `location`, `capacity` (with validation 1-1000).
+    -   **Registration Model:** `models/registration.js` to serve as the join table between Users and Events.
+
+3.  **Establish Relationships:**
+    -   In `models/index.js`, define the many-to-many relationship:
+        -   A `User` can be registered for many `Events`.
+        -   An `Event` can have many `Users` registered.
+    -   Use the `Registration` table as the `through` table for the association.
+
+4.  **Database Synchronization:**
+    -   Integrate `sequelize.sync()` into the server startup (`index.js`) to automatically create tables based on models for development.
+
+### Phase 3: API Endpoint Implementation
+1.  **User Endpoint (for testing):**
+    -   `POST /users`: Create a new user.
+
+2.  **Event Endpoints:**
+    -   `POST /events`: Create a new event.
+    -   `GET /events/:id`: Retrieve details for a single event, including a list of registered users.
+    -   `GET /events/upcoming`: Retrieve all future events, with custom sorting.
+    -   `GET /events/:id/stats`: Get statistics for an event (registrations, capacity).
+
+3.  **Registration Endpoints:**
+    -   `POST /events/:id/register`: Register a user for an event.
+    -   `DELETE /events/:id/register`: Cancel a user's registration.
+
+### Phase 4: Business Logic and Validation
+1.  **Input Validation:**
+    -   Use `express-validator` to validate all incoming request data (bodies, params).
+    -   Create a reusable `handleValidationErrors` middleware to keep route definitions clean and DRY (Don't Repeat Yourself).
+
+2.  **Registration Logic:**
+    -   **Concurrency Control:** Implement Sequelize transactions for the registration process to ensure atomicity and prevent race conditions.
+    -   **Rule Enforcement:**
+        -   Disallow registration for past events.
+        -   Prevent a user from registering for the same event twice.
+        -   Enforce event capacity limits.
+    -   Return meaningful HTTP status codes (`400`, `404`, `409`) and clear error messages for all failure scenarios.
+
+3.  **Custom Sorting Logic:**
+    -   Implement efficient sorting for the `GET /events/upcoming` endpoint directly within the database query:
+        1.  Primary sort: `datetime` ascending.
+        2.  Secondary sort: `location` alphabetically.
+
+### Phase 5: Testing and Finalization
+1.  **Local Database Setup:**
+    -   Provide instructions to run PostgreSQL using Docker for a consistent and isolated development environment.
+
+2.  **Manual API Testing:**
+    -   Conduct a full, step-by-step test of the entire API lifecycle using a command-line tool.
+    -   Verify all success and failure cases, including validation, business rules, and sorting.
+
+3.  **Code Refinement:**
+    -   Refactor code as needed to improve readability and maintainability.
+    -   Add explanatory comments to complex sections (e.g., transactions) to clarify intent.
+    -   Improve error logging for easier server-side debugging.
+
+4.  **Documentation:**
+    -   Create a comprehensive `README.md` file including:
+        -   Project overview.
+        -   Setup instructions.
+        -   Detailed API endpoint documentation with request/response examples.
+        -   Sample `curl` requests.
+
+### Phase 6: Version Control
+1.  **Initialize Git:**
+    -   Initialize a new Git repository.
+
+2.  **Create `.gitignore`:**
+    -   Add `node_modules/` and `.env` to the `.gitignore` file to exclude them from the repository.
+
+3.  **Push to GitHub:**
+    -   Push the final project to the remote GitHub repository. 
