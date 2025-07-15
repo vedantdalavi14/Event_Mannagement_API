@@ -18,7 +18,7 @@ This is a RESTful API for managing events, built with Node.js, Express, and Post
 
 ## Project Structure
 ```
-.
+. 
 ├── config
 │   └── database.js
 ├── controllers
